@@ -1,137 +1,156 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Multa Contratual</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 600px;
-            margin: auto;
-            padding: 20px;
-            background-image: url('https://i.postimg.cc/13pMmQJk/Calculadora-1.png');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed; /* Mantém a imagem de fundo fixa */
-            color: #ffffff;
-        }
-        h1 {
-            color: #ffffff;
-        }
-        label {
-            display: block;
-            margin: 10px 0 5px;
-            color: #ffffff;
-        }
-        input[type="text"], input[type="date"], select {
-            width: 100%;
-            padding: 8px;
-            margin: 5px 0 20px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            background-color: rgba(255, 255, 255, 0.8);
-            color: #333;
-        }
-        button {
-            padding: 10px 15px;
-            font-size: 16px;
-            color: #fff;
-            background-color: #d13a21;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #9d2a7d;
-        }
-        .result {
-            margin-top: 20px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            background-color: rgba(248, 104, 1, 0.8);
-            color: #fff;
-        }
-        .result p {
-            margin: 5px 0;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Calculadora de Multa Contratual</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-image: url('https://i.postimg.cc/13pMmQJk/Calculadora-1.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+    }
+    .container {
+      background: rgba(0, 0, 0, 0.75);
+      padding: 30px;
+      border-radius: 15px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #fff;
+    }
+    label {
+      display: block;
+      margin: 10px 0 5px;
+      font-weight: bold;
+    }
+    input[type="text"],
+    input[type="date"],
+    select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      margin-bottom: 15px;
+      background-color: rgba(255, 255, 255, 0.85);
+      color: #000;
+      font-size: 16px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #d13a21;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #fff;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background-color: #9d2a7d;
+    }
+    .result {
+      margin-top: 20px;
+      background-color: rgba(248, 104, 1, 0.8);
+      padding: 15px;
+      border-radius: 10px;
+    }
+    .result p {
+      margin: 8px 0;
+    }
+  </style>
 </head>
 <body>
+  <div class="container">
     <h1>Calculadora de Multa Contratual</h1>
     <form id="calcForm">
-        <label for="contrato">Tipo de Contrato:</label>
-        <select id="contrato" onchange="atualizarDataFinal()">
-            <option value="12">Pessoa Física (12 meses)</option>
-            <option value="24">Pessoa Jurídica (24 meses)</option>
-        </select>
+      <label for="contrato">Tipo de Contrato:</label>
+      <select id="contrato" onchange="atualizarDataFinal()">
+        <option value="12">Pessoa Física (12 meses)</option>
+        <option value="24">Pessoa Jurídica (24 meses)</option>
+      </select>
 
-        <label for="dataInicio">Data de Início:</label>
-        <input type="date" id="dataInicio" required onchange="atualizarDataFinal()">
+      <label for="dataInicio">Data de Início:</label>
+      <input type="date" id="dataInicio" required onchange="atualizarDataFinal()"/>
 
-        <label for="dataFinal">Data Final:</label>
-        <input type="date" id="dataFinal" required readonly>
+      <label for="dataFinal">Data Final:</label>
+      <input type="date" id="dataFinal" required readonly/>
 
-        <label for="dataCancelamento">Data de Cancelamento:</label>
-        <input type="date" id="dataCancelamento" required>
+      <label for="dataCancelamento">Data de Cancelamento:</label>
+      <input type="date" id="dataCancelamento" required/>
 
-        <label for="valorContrato">Valor do Contrato (R$):</label>
-        <input type="text" id="valorContrato" required>
+      <label for="valorContrato">Valor do Contrato (R$):</label>
+      <input type="text" id="valorContrato" required/>
 
-        <button type="button" onclick="calcularMulta()">Calcular Multa</button>
+      <button type="button" onclick="calcularMulta()">Calcular Multa</button>
     </form>
 
     <div class="result" id="resultado" style="display:none;">
-        <p><strong>Meses Restantes:</strong> <span id="mesesRestantes"></span></p>
-        <p><strong>Valor da Multa:</strong> <span id="valorMulta"></span></p>
+      <p><strong>Meses Restantes:</strong> <span id="mesesRestantes"></span></p>
+      <p><strong>Valor da Multa:</strong> <span id="valorMulta"></span></p>
     </div>
+  </div>
 
-    <script>
-        function atualizarDataFinal() {
-            const tipoContrato = parseInt(document.getElementById('contrato').value);
-            const dataInicio = document.getElementById('dataInicio').value;
+  <script>
+    function atualizarDataFinal() {
+      const tipoContrato = parseInt(document.getElementById('contrato').value);
+      const dataInicio = document.getElementById('dataInicio').value;
 
-            if (!dataInicio) return;
+      if (!dataInicio) return;
 
-            const data = new Date(dataInicio);
-            data.setMonth(data.getMonth() + tipoContrato);
+      const data = new Date(dataInicio);
+      data.setMonth(data.getMonth() + tipoContrato);
 
-            const ano = data.getFullYear();
-            const mes = String(data.getMonth() + 1).padStart(2, '0');
-            const dia = String(data.getDate()).padStart(2, '0');
+      const ano = data.getFullYear();
+      const mes = String(data.getMonth() + 1).padStart(2, '0');
+      const dia = String(data.getDate()).padStart(2, '0');
 
-            document.getElementById('dataFinal').value = `${ano}-${mes}-${dia}`;
-        }
+      document.getElementById('dataFinal').value = `${ano}-${mes}-${dia}`;
+    }
 
-        function calcularMulta() {
-            const contrato = document.getElementById('contrato').value;
-            const dataInicio = new Date(document.getElementById('dataInicio').value);
-            const dataFinal = new Date(document.getElementById('dataFinal').value);
-            const dataCancelamento = new Date(document.getElementById('dataCancelamento').value);
-            const valorContrato = parseFloat(document.getElementById('valorContrato').value.replace(',', '.'));
+    function calcularMulta() {
+      const contrato = document.getElementById('contrato').value;
+      const dataInicio = new Date(document.getElementById('dataInicio').value);
+      const dataFinal = new Date(document.getElementById('dataFinal').value);
+      const dataCancelamento = new Date(document.getElementById('dataCancelamento').value);
+      const valorContrato = parseFloat(document.getElementById('valorContrato').value.replace(',', '.'));
 
-            if (isNaN(valorContrato) || !dataInicio || !dataFinal || !dataCancelamento) {
-                alert("Por favor, preencha todos os campos corretamente.");
-                return;
-            }
+      if (isNaN(valorContrato) || !dataInicio || !dataFinal || !dataCancelamento) {
+        alert("Por favor, preencha todos os campos corretamente.");
+        return;
+      }
 
-            const percentualMulta = 0.30;
+      const percentualMulta = 0.30;
+      const mesesRestantes = calcularMesesRestantes(dataCancelamento, dataFinal);
+      const valorMulta = valorContrato * percentualMulta * mesesRestantes;
 
-            const mesesRestantes = calcularMesesRestantes(dataCancelamento, dataFinal);
-            const valorMulta = valorContrato * percentualMulta * mesesRestantes;
+      document.getElementById('mesesRestantes').textContent = mesesRestantes;
+      document.getElementById('valorMulta').textContent = `R$ ${valorMulta.toFixed(2).replace('.', ',')}`;
+      document.getElementById('resultado').style.display = 'block';
+    }
 
-            document.getElementById('mesesRestantes').textContent = mesesRestantes;
-            document.getElementById('valorMulta').textContent = `R$ ${valorMulta.toFixed(2).replace('.', ',')}`;
-            document.getElementById('resultado').style.display = 'block';
-        }
-
-        function calcularMesesRestantes(dataCancelamento, dataFinal) {
-            const anoDif = dataFinal.getFullYear() - dataCancelamento.getFullYear();
-            const mesDif = dataFinal.getMonth() - dataCancelamento.getMonth();
-            return anoDif * 12 + mesDif;
-        }
-    </script>
+    function calcularMesesRestantes(dataCancelamento, dataFinal) {
+      const anoDif = dataFinal.getFullYear() - dataCancelamento.getFullYear();
+      const mesDif = dataFinal.getMonth() - dataCancelamento.getMonth();
+      return anoDif * 12 + mesDif;
+    }
+  </script>
 </body>
 </html>
