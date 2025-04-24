@@ -7,22 +7,23 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
             max-width: 600px;
             margin: auto;
-            background-image: url('https://i.postimg.cc/13pMmQJk/Calculadora-1.png'); /* Caminho para a imagem de fundo */
-            background-size: cover; /* Faz a imagem cobrir toda a área do fundo */
-            background-position: center; /* Centraliza a imagem de fundo */
-            background-repeat: no-repeat; /* Evita que a imagem se repita */
-            color: #ffffff; /* Cor do texto padrão da página */
+            padding: 20px;
+            background-image: url('https://i.postimg.cc/13pMmQJk/Calculadora-1.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed; /* Mantém a imagem de fundo fixa */
+            color: #ffffff;
         }
         h1 {
-            color: #ffffff; /* Cor do título */
+            color: #ffffff;
         }
         label {
             display: block;
             margin: 10px 0 5px;
-            color: #ffffff; /* Cor das labels */
+            color: #ffffff;
         }
         input[type="text"], input[type="date"], select {
             width: 100%;
@@ -30,8 +31,8 @@
             margin: 5px 0 20px;
             border: 1px solid #ddd;
             border-radius: 4px;
-            background-color: rgba(255, 255, 255, 0.8); /* Adiciona um fundo branco semi-transparente para melhorar a legibilidade */
-            color: #333; /* Cor do texto dentro dos campos de entrada */
+            background-color: rgba(255, 255, 255, 0.8);
+            color: #333;
         }
         button {
             padding: 10px 15px;
@@ -50,8 +51,8 @@
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
-            background-color: rgba(248, 104, 1, 0.8); /* Cor de fundo semi-transparente para a área de resultado */
-            color: #fff; /* Cor do texto dentro da área de resultado */
+            background-color: rgba(248, 104, 1, 0.8);
+            color: #fff;
         }
         .result p {
             margin: 5px 0;
@@ -118,13 +119,9 @@
 
             const percentualMulta = 0.30;
 
-            // Calcular o número de meses restantes
             const mesesRestantes = calcularMesesRestantes(dataCancelamento, dataFinal);
-
-            // Calcular a multa com base em 30% do valor total do contrato multiplicado pelos meses restantes
             const valorMulta = valorContrato * percentualMulta * mesesRestantes;
 
-            // Exibir resultados
             document.getElementById('mesesRestantes').textContent = mesesRestantes;
             document.getElementById('valorMulta').textContent = `R$ ${valorMulta.toFixed(2).replace('.', ',')}`;
             document.getElementById('resultado').style.display = 'block';
@@ -138,4 +135,3 @@
     </script>
 </body>
 </html>
-
