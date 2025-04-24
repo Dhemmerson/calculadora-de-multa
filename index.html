@@ -4,77 +4,84 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Calculadora de Multa Contratual</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <style>
-    * {
-      box-sizing: border-box;
-    }
     body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
+      font-family: Arial, sans-serif;
       background-image: url('https://i.postimg.cc/13pMmQJk/Calculadora-1.png');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
-      background-attachment: fixed; /* imagem estática */
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: #fff;
+      margin: 0;
+      padding: 0;
+      color: #ffffff;
     }
     .container {
-      background: rgba(0, 0, 0, 0.75);
+      max-width: 600px;
+      margin: auto;
+      background-color: rgba(0, 0, 0, 0.7);
       padding: 30px;
-      border-radius: 15px;
-      max-width: 500px;
-      width: 100%;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+      border-radius: 10px;
+      margin-top: 40px;
     }
     h1 {
       text-align: center;
       margin-bottom: 25px;
-      color: #ffcc33;
+      background: linear-gradient(to right, #ff7a00, #8e2de2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-size: 28px;
     }
     label {
       display: block;
       margin: 10px 0 5px;
       font-weight: bold;
     }
-    input[type="text"],
-    input[type="date"],
-    select {
+    .input-group {
+      position: relative;
+      margin-bottom: 20px;
+    }
+    .input-group i {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      color: #555;
+    }
+    .input-group input,
+    .input-group select {
       width: 100%;
-      padding: 10px;
-      border-radius: 8px;
-      border: none;
-      margin-bottom: 15px;
-      background-color: rgba(255, 255, 255, 0.85);
-      color: #000;
-      font-size: 16px;
+      padding: 10px 10px 10px 35px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: rgba(255, 255, 255, 0.9);
+      color: #333;
+      font-size: 14px;
     }
     button {
       width: 100%;
       padding: 12px;
-      border: none;
-      border-radius: 8px;
       font-size: 16px;
       font-weight: bold;
+      border: none;
+      border-radius: 5px;
+      background: linear-gradient(to right, #ff7a00, #8e2de2);
+      color: white;
       cursor: pointer;
-      color: #fff;
-      background: linear-gradient(90deg, #ff7a00, #8e2de2); /* degradê laranja para roxo */
-      transition: transform 0.2s ease;
+      transition: 0.3s;
     }
     button:hover {
-      transform: scale(1.03);
+      opacity: 0.9;
     }
     .result {
-      margin-top: 20px;
-      background-color: rgba(248, 104, 1, 0.8);
+      margin-top: 25px;
       padding: 15px;
-      border-radius: 10px;
+      border-radius: 5px;
+      background-color: rgba(0, 0, 0, 0.6);
+      color: #fff;
     }
     .result p {
       margin: 8px 0;
+      font-size: 16px;
     }
   </style>
 </head>
@@ -83,22 +90,37 @@
     <h1>Calculadora de Multa Contratual</h1>
     <form id="calcForm">
       <label for="contrato">Tipo de Contrato:</label>
-      <select id="contrato" onchange="atualizarDataFinal()">
-        <option value="12">Pessoa Física (12 meses)</option>
-        <option value="24">Pessoa Jurídica (24 meses)</option>
-      </select>
+      <div class="input-group">
+        <i class="fas fa-file-signature"></i>
+        <select id="contrato" onchange="atualizarDataFinal()">
+          <option value="12">Pessoa Física (12 meses)</option>
+          <option value="24">Pessoa Jurídica (24 meses)</option>
+        </select>
+      </div>
 
       <label for="dataInicio">Data de Início:</label>
-      <input type="date" id="dataInicio" required onchange="atualizarDataFinal()"/>
+      <div class="input-group">
+        <i class="fas fa-calendar-alt"></i>
+        <input type="date" id="dataInicio" required onchange="atualizarDataFinal()">
+      </div>
 
       <label for="dataFinal">Data Final:</label>
-      <input type="date" id="dataFinal" required readonly/>
+      <div class="input-group">
+        <i class="fas fa-calendar-check"></i>
+        <input type="date" id="dataFinal" required readonly>
+      </div>
 
       <label for="dataCancelamento">Data de Cancelamento:</label>
-      <input type="date" id="dataCancelamento" required/>
+      <div class="input-group">
+        <i class="fas fa-ban"></i>
+        <input type="date" id="dataCancelamento" required>
+      </div>
 
       <label for="valorContrato">Valor do Contrato (R$):</label>
-      <input type="text" id="valorContrato" required/>
+      <div class="input-group">
+        <i class="fas fa-money-bill-wave"></i>
+        <input type="text" id="valorContrato" required placeholder="Ex: 1200,00">
+      </div>
 
       <button type="button" onclick="calcularMulta()">Gerar Multa</button>
     </form>
@@ -114,7 +136,6 @@
       const tipoContrato = parseInt(document.getElementById('contrato').value);
       const dataInicio = document.getElementById('dataInicio').value;
       if (!dataInicio) return;
-
       const data = new Date(dataInicio);
       data.setMonth(data.getMonth() + tipoContrato);
       const ano = data.getFullYear();
