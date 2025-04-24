@@ -15,6 +15,7 @@
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
+      background-attachment: fixed; /* imagem estática */
       min-height: 100vh;
       display: flex;
       justify-content: center;
@@ -54,17 +55,17 @@
     button {
       width: 100%;
       padding: 12px;
-      background-color: #d13a21;
       border: none;
       border-radius: 8px;
       font-size: 16px;
       font-weight: bold;
       cursor: pointer;
       color: #fff;
-      transition: background 0.3s;
+      background: linear-gradient(90deg, #ff7a00, #8e2de2); /* degradê laranja para roxo */
+      transition: transform 0.2s ease;
     }
     button:hover {
-      background-color: #9d2a7d;
+      transform: scale(1.03);
     }
     .result {
       margin-top: 20px;
@@ -99,7 +100,7 @@
       <label for="valorContrato">Valor do Contrato (R$):</label>
       <input type="text" id="valorContrato" required/>
 
-      <button type="button" onclick="calcularMulta()">Calcular Multa</button>
+      <button type="button" onclick="calcularMulta()">Gerar Multa</button>
     </form>
 
     <div class="result" id="resultado" style="display:none;">
@@ -112,16 +113,13 @@
     function atualizarDataFinal() {
       const tipoContrato = parseInt(document.getElementById('contrato').value);
       const dataInicio = document.getElementById('dataInicio').value;
-
       if (!dataInicio) return;
 
       const data = new Date(dataInicio);
       data.setMonth(data.getMonth() + tipoContrato);
-
       const ano = data.getFullYear();
       const mes = String(data.getMonth() + 1).padStart(2, '0');
       const dia = String(data.getDate()).padStart(2, '0');
-
       document.getElementById('dataFinal').value = `${ano}-${mes}-${dia}`;
     }
 
