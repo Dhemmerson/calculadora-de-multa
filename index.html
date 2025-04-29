@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Calculadora de Multa Contratual</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
@@ -22,7 +22,7 @@
     .container {
       max-width: 500px;
       margin: 50px auto;
-      background: rgba(0, 0, 0, 0.75);
+      background: rgba(0, 0, 0, 0.7);
       padding: 30px;
       border-radius: 20px;
       color: #fff;
@@ -80,20 +80,19 @@
       color: #fff;
       cursor: pointer;
       transition: 0.3s;
-      margin-bottom: 20px;
     }
 
     .btn:hover {
       opacity: 0.9;
     }
 
-    #resultado {
-      text-align: center;
+    .resultado {
+      margin-top: 20px;
+      background: rgba(255, 255, 255, 0.1);
       padding: 15px;
       border-radius: 10px;
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      font-size: 18px;
+      text-align: center;
+      font-size: 16px;
     }
   </style>
 </head>
@@ -104,22 +103,22 @@
     <div class="form-group">
       <label for="tipo">Tipo de Contrato:</label>
       <i class="bi bi-person-badge"></i>
-      <select id="tipo" onchange="atualizarDataFinal()">
-        <option value="PF">Pessoa Física (12 meses)</option>
-        <option value="PJ">Pessoa Jurídica (24 meses)</option>
+      <select id="tipo" onchange="preencherDataFinal()">
+        <option>Pessoa Física (12 meses)</option>
+        <option>Pessoa Jurídica (24 meses)</option>
       </select>
     </div>
 
     <div class="form-group">
       <label for="inicio">Data de Início:</label>
       <i class="bi bi-calendar-date"></i>
-      <input type="date" id="inicio" onchange="atualizarDataFinal()">
+      <input type="date" id="inicio" onchange="preencherDataFinal()">
     </div>
 
     <div class="form-group">
       <label for="final">Data Final:</label>
       <i class="bi bi-calendar3"></i>
-      <input type="date" id="final" readonly>
+      <input type="date" id="final" disabled>
     </div>
 
     <div class="form-group">
@@ -129,67 +128,64 @@
     </div>
 
     <div class="form-group">
-      <label for="valor">Valor Total do Contrato (R$):</label>
+      <label for="valor">Valor do Contrato (R$):</label>
       <i class="bi bi-currency-exchange"></i>
       <input type="text" id="valor" placeholder="Ex: 1200,00">
     </div>
 
-    <button class="btn" onclick="calcularMulta()">Calcular Multa</button>
+    <button class="btn" onclick="calcularMulta()">Gerar Multa</button>
 
-    <div id="resultado"></div>
+    <div id="resultado" class="resultado" style="display: none;"></div>
   </div>
 
   <script>
-    function atualizarDataFinal() {
-      const tipo = document.getElementById("tipo").value;
-      const inicio = document.getElementById("inicio").value;
-      const final = document.getElementById("final");
-
+    function preencherDataFinal() {
+      const tipo = document.getElementById('tipo').value;
+      const inicio = document.getElementById('inicio').value;
       if (!inicio) return;
 
       const dataInicio = new Date(inicio);
-      const meses = tipo === "PJ" ? 24 : 12;
-      dataInicio.setMonth(dataInicio.getMonth() + meses);
+      let meses = tipo.includes('Física') ? 12 : 24;
 
-      const ano = dataInicio.getFullYear();
-      const mes = String(dataInicio.getMonth() + 1).padStart(2, '0');
-      const dia = String(dataInicio.getDate()).padStart(2, '0');
+      const dataFinal = new Date(dataInicio);
+      dataFinal.setMonth(dataFinal.getMonth() + meses);
+      dataFinal.setDate(dataFinal.getDate() - 1); // final no dia anterior à data exata
 
-      final.value = `${ano}-${mes}-${dia}`;
+      const dataFinalFormatada = dataFinal.toISOString().split('T')[0];
+      document.getElementById('final').value = dataFinalFormatada;
     }
 
     function calcularMulta() {
-      const tipo = document.getElementById("tipo").value;
-      const inicio = new Date(document.getElementById("inicio").value);
-      const final = new Date(document.getElementById("final").value);
-      const cancelamento = new Date(document.getElementById("cancelamento").value);
-      const valor = parseFloat(document.getElementById("valor").value.replace(",", "."));
+      const inicio = new Date(document.getElementById('inicio').value);
+      const cancelamento = new Date(document.getElementById('cancelamento').value);
+      const final = new Date(document.getElementById('final').value);
+      let valorTotal = document.getElementById('valor').value.replace(",", ".");
+
+      if (isNaN(inicio) || isNaN(cancelamento) || isNaN(final) || !valorTotal) {
+        alert("Preencha todos os campos corretamente!");
+        return;
+      }
+
+      valorTotal = parseFloat(valorTotal);
+      const totalMeses = document.getElementById('tipo').value.includes('Física') ? 12 : 24;
+
+      const mesesRestantes = Math.max(0, final.getMonth() - cancelamento.getMonth() + 
+        (12 * (final.getFullYear() - cancelamento.getFullYear())) - 
+        (cancelamento.getDate() > final.getDate() ? 1 : 0)
+      );
+
+      const valorMensal = valorTotal / totalMeses;
+      const valorRestante = valorMensal * mesesRestantes;
+      const multa = valorRestante * 0.3;
+
       const resultado = document.getElementById("resultado");
-
-      if (!inicio || !final || !cancelamento || isNaN(valor)) {
-        resultado.innerHTML = "<span style='color: orange;'>Preencha todos os campos corretamente.</span>";
-        return;
-      }
-
-      if (cancelamento > final) {
-        resultado.innerHTML = "<span style='color: red;'>A data de cancelamento é posterior ao término do contrato.</span>";
-        return;
-      }
-
-      const totalMeses = tipo === "PJ" ? 24 : 12;
-      const totalDias = totalMeses * 30;
-      const diasRestantes = Math.ceil((final - cancelamento) / (1000 * 60 * 60 * 24));
-      const valorProporcionalRestante = (diasRestantes / totalDias) * valor;
-      const multa = valorProporcionalRestante * 0.3;
-
       resultado.innerHTML = `
-        <strong>Resultado:</strong><br>
-        Dias restantes: <b>${diasRestantes}</b><br>
-        Valor proporcional restante: <b>R$ ${valorProporcionalRestante.toFixed(2).replace(".", ",")}</b><br>
-        <span style="color: lime;">Multa de 30%: <b>R$ ${multa.toFixed(2).replace(".", ",")}</b></span>
+        <p><strong>Meses Restantes:</strong> ${mesesRestantes}</p>
+        <p><strong>Valor proporcional restante:</strong> R$ ${valorRestante.toFixed(2).replace(".", ",")}</p>
+        <p><strong>Multa de 30%:</strong> <span style="color: orange;">R$ ${multa.toFixed(2).replace(".", ",")}</span></p>
       `;
+      resultado.style.display = "block";
     }
   </script>
 </body>
 </html>
-
