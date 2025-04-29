@@ -171,7 +171,8 @@
 
       mesesRestantes = Math.max(mesesRestantes, 0);
 
-      const multa = valorMensal * mesesRestantes * 0.3;
+      const valorRestante = valorMensal * mesesRestantes;
+      const multa = valorRestante * 0.3;
 
       const resultado = document.getElementById("resultado");
       resultado.innerHTML = `
