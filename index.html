@@ -85,15 +85,6 @@
     .btn:hover {
       opacity: 0.9;
     }
-
-    .resultado {
-      margin-top: 20px;
-      background: rgba(255, 255, 255, 0.1);
-      padding: 15px;
-      border-radius: 10px;
-      text-align: center;
-      font-size: 16px;
-    }
   </style>
 </head>
 <body>
@@ -103,7 +94,7 @@
     <div class="form-group">
       <label for="tipo">Tipo de Contrato:</label>
       <i class="bi bi-person-badge"></i>
-      <select id="tipo" onchange="preencherDataFinal()">
+      <select id="tipo">
         <option>Pessoa Física (12 meses)</option>
         <option>Pessoa Jurídica (24 meses)</option>
       </select>
@@ -112,13 +103,13 @@
     <div class="form-group">
       <label for="inicio">Data de Início:</label>
       <i class="bi bi-calendar-date"></i>
-      <input type="date" id="inicio" onchange="preencherDataFinal()">
+      <input type="date" id="inicio">
     </div>
 
     <div class="form-group">
       <label for="final">Data Final:</label>
       <i class="bi bi-calendar3"></i>
-      <input type="date" id="final" disabled>
+      <input type="date" id="final">
     </div>
 
     <div class="form-group">
@@ -135,48 +126,61 @@
 
     <button class="btn" onclick="calcularMulta()">Gerar Multa</button>
 
-    <div id="resultado" class="resultado" style="display: none;"></div>
+    <div id="resultado"></div>
   </div>
 
- <script>
-  function calcularMulta() {
-    const inicio = new Date(document.getElementById('inicio').value);
-    const cancelamento = new Date(document.getElementById('cancelamento').value);
-    const final = new Date(document.getElementById('final').value);
-    let valorTotal = document.getElementById('valor').value.replace(",", ".");
-    const tipo = document.getElementById('tipo').value;
+  <script>
+    document.getElementById('tipo').addEventListener('change', () => {
+      const inicioInput = document.getElementById('inicio');
+      const finalInput = document.getElementById('final');
 
-    if (!inicio || !cancelamento || !final || !valorTotal) {
-      alert("Preencha todos os campos corretamente!");
-      return;
+      if (!inicioInput.value) return;
+
+      const tipo = document.getElementById('tipo').value;
+      const meses = tipo.includes("Física") ? 12 : 24;
+
+      const inicio = new Date(inicioInput.value);
+      const novaData = new Date(inicio);
+      novaData.setMonth(novaData.getMonth() + meses);
+
+      finalInput.value = novaData.toISOString().split("T")[0];
+    });
+
+    function calcularMulta() {
+      const inicio = new Date(document.getElementById('inicio').value);
+      const cancelamento = new Date(document.getElementById('cancelamento').value);
+      const final = new Date(document.getElementById('final').value);
+      let valorTotal = document.getElementById('valor').value.replace(",", ".");
+      const tipo = document.getElementById('tipo').value;
+
+      if (!inicio || !cancelamento || !final || !valorTotal) {
+        alert("Preencha todos os campos corretamente!");
+        return;
+      }
+
+      valorTotal = parseFloat(valorTotal);
+      const totalMeses = tipo.includes("Física") ? 12 : 24;
+      const valorMensal = valorTotal / totalMeses;
+
+      let mesesRestantes = (final.getFullYear() - cancelamento.getFullYear()) * 12 +
+                           (final.getMonth() - cancelamento.getMonth());
+
+      if (cancelamento.getDate() < final.getDate()) {
+        mesesRestantes += 1;
+      }
+
+      mesesRestantes = Math.max(mesesRestantes, 0);
+
+      const multa = valorMensal * mesesRestantes * 0.3;
+
+      const resultado = document.getElementById("resultado");
+      resultado.innerHTML = `
+        <div style="margin-top: 20px; background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 10px;">
+          <p><strong>Meses Restantes:</strong> ${mesesRestantes}</p>
+          <p><strong>Valor da Multa (30%):</strong> R$ ${multa.toFixed(2).replace('.', ',')}</p>
+        </div>
+      `;
     }
-
-    valorTotal = parseFloat(valorTotal);
-    const totalMeses = tipo.includes("Física") ? 12 : 24;
-    const valorMensal = valorTotal / totalMeses;
-
-    // Cálculo de meses restantes
-    let mesesRestantes = (final.getFullYear() - cancelamento.getFullYear()) * 12 +
-                         (final.getMonth() - cancelamento.getMonth());
-
-    // Ajusta se o cancelamento for antes do dia final no mês
-    if (cancelamento.getDate() < final.getDate()) {
-      mesesRestantes += 1;
-    }
-
-    mesesRestantes = Math.max(mesesRestantes, 0); // Garante que não fique negativo
-
-    const multa = valorMensal * mesesRestantes * 0.3;
-
-    // Mostra o resultado no tema da calculadora
-    const resultado = document.getElementById("resultado");
-    resultado.innerHTML = `
-      <div style="margin-top: 20px; background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 10px;">
-        <p><strong>Meses Restantes:</strong> ${mesesRestantes}</p>
-        <p><strong>Valor da Multa (30%):</strong> R$ ${multa.toFixed(2).replace('.', ',')}</p>
-      </div>
-    `;
-  }
-</script>
+  </script>
 </body>
 </html>
