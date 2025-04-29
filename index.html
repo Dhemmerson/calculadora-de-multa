@@ -138,54 +138,45 @@
     <div id="resultado" class="resultado" style="display: none;"></div>
   </div>
 
-  <script>
-    function preencherDataFinal() {
-      const tipo = document.getElementById('tipo').value;
-      const inicio = document.getElementById('inicio').value;
-      if (!inicio) return;
+ <script>
+  function calcularMulta() {
+    const inicio = new Date(document.getElementById('inicio').value);
+    const cancelamento = new Date(document.getElementById('cancelamento').value);
+    const final = new Date(document.getElementById('final').value);
+    let valorTotal = document.getElementById('valor').value.replace(",", ".");
+    const tipo = document.getElementById('tipo').value;
 
-      const dataInicio = new Date(inicio);
-      let meses = tipo.includes('Física') ? 12 : 24;
-
-      const dataFinal = new Date(dataInicio);
-      dataFinal.setMonth(dataFinal.getMonth() + meses);
-      dataFinal.setDate(dataFinal.getDate() - 1); // final no dia anterior à data exata
-
-      const dataFinalFormatada = dataFinal.toISOString().split('T')[0];
-      document.getElementById('final').value = dataFinalFormatada;
+    if (!inicio || !cancelamento || !final || !valorTotal) {
+      alert("Preencha todos os campos corretamente!");
+      return;
     }
 
-    function calcularMulta() {
-      const inicio = new Date(document.getElementById('inicio').value);
-      const cancelamento = new Date(document.getElementById('cancelamento').value);
-      const final = new Date(document.getElementById('final').value);
-      let valorTotal = document.getElementById('valor').value.replace(",", ".");
+    valorTotal = parseFloat(valorTotal);
+    const totalMeses = tipo.includes("Física") ? 12 : 24;
+    const valorMensal = valorTotal / totalMeses;
 
-      if (isNaN(inicio) || isNaN(cancelamento) || isNaN(final) || !valorTotal) {
-        alert("Preencha todos os campos corretamente!");
-        return;
-      }
+    // Cálculo de meses restantes
+    let mesesRestantes = (final.getFullYear() - cancelamento.getFullYear()) * 12 +
+                         (final.getMonth() - cancelamento.getMonth());
 
-      valorTotal = parseFloat(valorTotal);
-      const totalMeses = document.getElementById('tipo').value.includes('Física') ? 12 : 24;
+    // Ajusta se o cancelamento for antes do dia final no mês
+    if (cancelamento.getDate() < final.getDate()) {
+      mesesRestantes += 1;
+    }
 
-      const mesesRestantes = Math.max(0, final.getMonth() - cancelamento.getMonth() + 
-        (12 * (final.getFullYear() - cancelamento.getFullYear())) - 
-        (cancelamento.getDate() > final.getDate() ? 1 : 0)
-      );
+    mesesRestantes = Math.max(mesesRestantes, 0); // Garante que não fique negativo
 
-      const valorMensal = valorTotal / totalMeses;
-      const valorRestante = valorMensal * mesesRestantes;
-      const multa = valorRestante * 0.3;
+    const multa = valorMensal * mesesRestantes * 0.3;
 
-      const resultado = document.getElementById("resultado");
-      resultado.innerHTML = `
+    // Mostra o resultado no tema da calculadora
+    const resultado = document.getElementById("resultado");
+    resultado.innerHTML = `
+      <div style="margin-top: 20px; background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 10px;">
         <p><strong>Meses Restantes:</strong> ${mesesRestantes}</p>
-        <p><strong>Valor proporcional restante:</strong> R$ ${valorRestante.toFixed(2).replace(".", ",")}</p>
-        <p><strong>Multa de 30%:</strong> <span style="color: orange;">R$ ${multa.toFixed(2).replace(".", ",")}</span></p>
-      `;
-      resultado.style.display = "block";
-    }
-  </script>
+        <p><strong>Valor da Multa (30%):</strong> R$ ${multa.toFixed(2).replace('.', ',')}</p>
+      </div>
+    `;
+  }
+</script>
 </body>
 </html>
