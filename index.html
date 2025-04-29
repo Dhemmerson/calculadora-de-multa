@@ -7,18 +7,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Inter', sans-serif;
-    }
-
+    /* Mesmos estilos do seu código original */
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
     body {
       background: url('https://i.postimg.cc/zBsh2Ggx/Design-sem-nome-15.png') no-repeat center center fixed;
       background-size: cover;
     }
-
     .container {
       max-width: 500px;
       margin: 50px auto;
@@ -27,7 +21,6 @@
       border-radius: 20px;
       color: #fff;
     }
-
     .container h1 {
       text-align: center;
       margin-bottom: 25px;
@@ -36,27 +29,15 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
-
-    .form-group {
-      margin-bottom: 15px;
-      position: relative;
-    }
-
-    .form-group label {
-      font-weight: 600;
-      margin-bottom: 5px;
-      display: block;
-    }
-
+    .form-group { margin-bottom: 15px; position: relative; }
+    .form-group label { font-weight: 600; margin-bottom: 5px; display: block; }
     .form-group i {
       position: absolute;
       top: 38px;
       left: 10px;
       color: #888;
     }
-
-    .form-group input,
-    .form-group select {
+    .form-group input, .form-group select {
       width: 100%;
       padding: 10px 10px 10px 35px;
       border-radius: 8px;
@@ -64,11 +45,7 @@
       outline: none;
       font-size: 14px;
     }
-
-    .form-group input::placeholder {
-      color: #aaa;
-    }
-
+    .form-group input::placeholder { color: #aaa; }
     .btn {
       width: 100%;
       padding: 12px;
@@ -81,10 +58,7 @@
       cursor: pointer;
       transition: 0.3s;
     }
-
-    .btn:hover {
-      opacity: 0.9;
-    }
+    .btn:hover { opacity: 0.9; }
   </style>
 </head>
 <body>
@@ -103,13 +77,13 @@
     <div class="form-group">
       <label for="inicio">Data de Início:</label>
       <i class="bi bi-calendar-date"></i>
-      <input type="date" id="inicio">
+      <input type="date" id="inicio" onchange="atualizarDataFinal()">
     </div>
 
     <div class="form-group">
       <label for="final">Data Final:</label>
       <i class="bi bi-calendar3"></i>
-      <input type="date" id="final">
+      <input type="date" id="final" readonly>
     </div>
 
     <div class="form-group">
@@ -128,8 +102,46 @@
   </div>
 
   <script>
+    function atualizarDataFinal() {
+      const tipo = document.getElementById("tipo").value;
+      const inicio = document.getElementById("inicio").value;
+      const final = document.getElementById("final");
+
+      if (!inicio) return;
+
+      const dataInicio = new Date(inicio);
+      const meses = tipo.includes("Jurídica") ? 24 : 12;
+      dataInicio.setMonth(dataInicio.getMonth() + meses);
+
+      const ano = dataInicio.getFullYear();
+      const mes = String(dataInicio.getMonth() + 1).padStart(2, '0');
+      const dia = String(dataInicio.getDate()).padStart(2, '0');
+
+      final.value = `${ano}-${mes}-${dia}`;
+    }
+
     function calcularMulta() {
-      alert("Função de cálculo em desenvolvimento...");
+      const tipo = document.getElementById("tipo").value;
+      const inicio = new Date(document.getElementById("inicio").value);
+      const final = new Date(document.getElementById("final").value);
+      const cancelamento = new Date(document.getElementById("cancelamento").value);
+      const valorContrato = parseFloat(document.getElementById("valor").value.replace(",", "."));
+
+      if (isNaN(valorContrato) || !inicio || !final || !cancelamento) {
+        alert("Preencha todos os campos corretamente.");
+        return;
+      }
+
+      const totalDias = (final - inicio) / (1000 * 60 * 60 * 24);
+      const diasRestantes = (final - cancelamento) / (1000 * 60 * 60 * 24);
+
+      if (diasRestantes < 0) {
+        alert("A data de cancelamento é posterior ao término do contrato.");
+        return;
+      }
+
+      const multa = (diasRestantes / totalDias) * valorContrato;
+      alert(`Multa proporcional: R$ ${multa.toFixed(2).replace(".", ",")}`);
     }
   </script>
 </body>
